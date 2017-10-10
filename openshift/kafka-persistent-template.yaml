@@ -137,7 +137,7 @@ objects:
         terminationGracePeriodSeconds: 10
         containers:
           - name: zookeeper
-            image: nbogojevic/zookeeper:3.4.9
+            image: nbogojevic/zookeeper:latest
             imagePullPolicy: Always
             env:
               - name: AB_JOLOKIA_PASSWORD_RANDOM
@@ -260,7 +260,7 @@ objects:
         terminationGracePeriodSeconds: 10
         containers:
         - name: broker
-          image: nbogojevic/kafka:0.10.2.0
+          image: nbogojevic/kafka:latest
           imagePullPolicy: Always
           env:
           - name: AB_JOLOKIA_PASSWORD_RANDOM
