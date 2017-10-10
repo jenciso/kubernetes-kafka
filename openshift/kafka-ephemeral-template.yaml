@@ -125,6 +125,9 @@ objects:
           component: zookeeper
         annotations:
           pod.alpha.kubernetes.io/initialized: "true"
+          prometheus.io/scrape: true
+          prometheus.io/path: /metrics
+          prometheus.io/port: 5555
       spec:
         terminationGracePeriodSeconds: 10
         containers:
@@ -147,6 +150,8 @@ objects:
                 name: peer
               - containerPort: 3888
                 name: leader-election
+              - containerPort: 5555
+                name: prometheus
               - containerPort: 8778
                 name: jolokia
             volumeMounts:
@@ -237,6 +242,9 @@ objects:
           component: kafka-broker
         annotations:
           pod.alpha.kubernetes.io/initialized: "true"
+          prometheus.io/scrape: true
+          prometheus.io/path: /metrics
+          prometheus.io/port: 5555
       spec:
         terminationGracePeriodSeconds: 10
         containers:
@@ -253,6 +261,8 @@ objects:
           ports:
           - containerPort: 9092
             name: kafka
+          - containerPort: 5555
+            name: prometheus
           - containerPort: 8778
             name: jolokia
           volumeMounts:

@@ -8,6 +8,10 @@ The installation is done using helm chart:
 helm install kafka-cluster
 ``` 
 
+#### Running in OpenShift
+
+Installation in OpenShift can be done using provided openshift templates. For details see [openshift/README.md](openshift/README.md)
+
 ### Helm Chart Parameters
 
 ```yaml
@@ -53,14 +57,13 @@ zookeeper:
   # zookeeper.jvmFlags are default java options to use with kafka
   jvmFlags: -Xmx512m
   # zookeeper.nodeSelector can be set with node labels to use when choosing nodes to deploy
-  nodeSelector:     # Node labels can be specified unde this key
+  nodeSelector:     
 
 # hawkular is set to true to enable hawkular metrics
 hawkular: false   
 
 # prometheus is set to true to enable prometheus metrics
-prometheus: false
-
+prometheus: true
 
 # jolokia is set to true if jolokia JMX endpoint should be exposed
 jolokia: true
@@ -76,11 +79,11 @@ jolokia: true
 
 ### Kafka as Kubernetes StatefulSet
 
-Kafka is run as a Kubernetes StatefulSet (or PetSet in older versions). 
+Kafka runs as a Kubernetes StatefulSet (or PetSet in older versions - helm chart auotmatically chooses supported resource type). 
 
 #### Storage
-Kafka can be run with or without persitent volumes.
 
+Kafka can be run with or without persitent volumes.
 
 When running with persitent volumes, the data is saved on instance or node crash. When running without persitent volumes, the data is stored locally on the node a kubernetes node loss may result in data loss, so high-availability and resiliency should be supported by kafka mechanisms, e.g. setting replication factor sufficiently high.
 
@@ -88,7 +91,7 @@ As for best performances, one might perfer specific local storage characteristic
 
 ### Kafka container image
 
-Default kafka container image is based on fabric8/s2i-java image. The docker build is located in `docker-kafka/`.
+Default kafka container image is based on [fabric8/s2i-java](https://hub.docker.com/r/fabric8/s2i-java/) image. The docker build is located in [docker-kafka/](./docker-kafka/).
 
 #### Customizing Kafka
 
@@ -97,18 +100,21 @@ two environmnet variables: `KAFKA_ADVERTISED_HOST` and `KAFKA_ADVERTISED_PORT`. 
 containers will use those values to advertise their address instead of default ones. 
 
 
-### Kafka in OpenShift
-
-For details see [openshift/README.md](openshift/README.md)
-
 ## Zookeeper
 
 Zookeeper also runs as a Stateful Set.
 
 Zookeeper uses local storage, so if you lose your zookeeper cluster, kafka will be unaware that persisted topics exist.
-The data is still there, but you will need to re-create topics. This can be done using `kafka-operator`.
+The data is still there, but you will need to re-create topics. This can be done using [kafka-operator](https://github.com/nbogojevic/kafka-operator).
 
 ### Zookeeper container image
 
-Default zookeeper container image is based on fabric8/s2i-java image. The docker build is located in `docker-zookeeper/`.
+Default zookeeper container image is based on [fabric8/s2i-java](https://hub.docker.com/r/fabric8/s2i-java/) image. The docker build is located in [docker-zookeeper/](./docker-zookeeper/).
+
+## Monitoring
+
+The startup script in docker images will detect if prometheus jmx_exporter, jolokia or agant-bond are installed and enable them. Each image is pre-configured to expose relevant JMX MBeans 
+via prometheus jmx_exporter.
+
+If prometheus is enabled via helm variables, StatefulSet pods will be annotated with standard prometheus scraping annotations.
 
