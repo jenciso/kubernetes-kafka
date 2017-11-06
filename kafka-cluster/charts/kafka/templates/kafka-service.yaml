@@ -11,6 +11,6 @@ spec:
   ports:
   - port: 9092
   selector:
-    app: {{ .Values.applicationName }}
+    app: {{ .Values.global.applicationName }}
     component: kafka-broker
     release: {{ .Release.Name | quote }}

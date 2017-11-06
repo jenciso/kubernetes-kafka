@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kafka-{{ .Values.applicationName }}-metrics-config
+  name: kafka-{{ .Values.global.applicationName }}-metrics-config
   labels:
     component: kafka-broker
     role: metrics
@@ -17,8 +17,8 @@ data:
       tls:
         skip_certificate_validation: true
       credentials:
-        username: secret:{{ .Values.applicationName }}-jolokia-sercret/username
-        password: secret:{{ .Values.applicationName }}-jolokia-sercret/password
+        username: secret:{{ .Values.global.applicationName }}-jolokia-sercret/username
+        password: secret:{{ .Values.global.applicationName }}-jolokia-sercret/password
       metrics:
       - name: kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,topic=*#OneMinuteRate
         type: gauge

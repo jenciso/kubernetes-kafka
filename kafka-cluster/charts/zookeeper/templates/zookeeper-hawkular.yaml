@@ -1,3 +1,4 @@
+{{- if .Values.hawkular }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -27,3 +28,4 @@ data:
         tags:
           jvm_metrics: true
           jvm_heap: true
+{{- end }}

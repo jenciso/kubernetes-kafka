@@ -40,18 +40,18 @@ spec:
         image: {{ if .Values.imageRegistry }}{{ .Values.imageRegistry }}/{{ end }}{{ .Values.kafka.image }}:{{ .Values.kafka.tag }}
         imagePullPolicy: {{ .Values.pullPolicy }}
         env:
-        {{- if .Values.jolokia }}
+        {{- if .Values.global.jolokia }}
         - name: AB_JOLOKIA_PASSWORD_RANDOM
           value: "false"
         - name: AB_JOLOKIA_USER
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.applicationName }}-jolokia-secret
+              name: {{ .Values.global.applicationName }}-jolokia-secret
               key: username
         - name: AB_JOLOKIA_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.applicationName }}-jolokia-secret
+              name: {{ .Values.global.applicationName }}-jolokia-secret
               key: password
         {{- end }}
         - name: KAFKA_HEAP_OPTS 
@@ -59,29 +59,34 @@ spec:
         ports:
         - containerPort: 9092
           name: kafka
-        {{- if .Values.prometheus }}
+        {{- if .Values.global.prometheus }}
         - containerPort: 5555
           name: prometheus
         {{- end }}
-        {{- if .Values.jolokia }}
+        {{- if .Values.global.jolokia }}
         - containerPort: 8778
           name: jolokia
         {{- end }}
         volumeMounts:
         - name: datadir
           mountPath: /opt/kafka/data
+        - name: kafka-service-properties
+          mountPath: /opt/mounted/config
       volumes:
       - name: datadir
         emptyDir: {}
+      - name: kafka-service-properties
+        configMap:
+          name: kafka-{{ .Values.global.applicationName }}-service-properties
       {{- if .Values.hawkular }}
       - name: hawkular-openshift-agent
         configMap:
-          name: kafka-{{ .Values.applicationName }}-metrics-config
+          name: kafka-{{ .Values.global.applicationName }}-metrics-config
       {{- end }}
   {{- if .Values.kafka.persistent }}
   volumeClaimTemplates:
   - metadata:
-      name: kafka-{{ .Values.applicationName }}-datadir
+      name: kafka-{{ .Values.global.applicationName }}-datadir
       labels:
         component: kafka-broker
         {{ include "standardLabels" . | indent 8}}

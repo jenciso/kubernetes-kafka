@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Secret
+{{- $adminUser := default (randAlphaNum 16) .Values.adminUser -}}
+{{- $adminPassword := default (randAlphaNum 16) .Values.adminPassword -}}
+{{- $clientUser := default (randAlphaNum 16) .Values.clientUser -}}
+{{- $clientPassword := default (randAlphaNum 16) .Values.clientPassword -}}
+metadata:
+  name: kafka-{{ .Values.global.applicationName }}-broker-auth
+  labels:
+    component: kafka-broker
+    role: auth
+    {{- include "standardLabels" . | indent 4 }}
+stringData:
+  kafka-server-jaas.conf: |
+    KafkaServer {
+      org.apache.kafka.common.security.plain.PlainLoginModule required
+      username="{{ $adminUser }}"
+      password="{{ $adminPassword }}"
+      user_{{ $adminUser }}="{{ $adminPassword }}"
+      user_{{ $clientUser }}="{{ $clientPassword }}";
+    };
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kafka-{{ .Values.global.applicationName }}-client-auth
+  labels:
+    component: kafka-broker
+    role: auth
+    {{- include "standardLabels" . | indent 4 }}
+stringData:
+  kafka-client-jaas.conf: |
+    KafkaServer {
+      org.apache.kafka.common.security.plain.PlainLoginModule required
+      username="{{ $clientUser }}"
+      password="{{ $clientPassword }}"
+    };

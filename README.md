@@ -8,6 +8,8 @@ The installation is done using helm chart:
 helm install kafka-cluster
 ``` 
 
+The chart will install zookeeper and kafka clusters as StatefulSets, configure needed services and monitoring.
+
 #### Running in OpenShift
 
 Installation in OpenShift can be done using provided openshift templates. For details see [openshift/README.md](openshift/README.md)
@@ -15,77 +17,77 @@ Installation in OpenShift can be done using provided openshift templates. For de
 ### Helm Chart Parameters
 
 ```yaml
-# imageRegistry is the address of the container image registry to use
+## imageRegistry is the address of the container image registry to use
 # imageRegistry: index.docker.io
 
-# pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
+## pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
 pullPolicy: IfNotPresent
-# applicationName is the default name of the application
+## applicationName is the default name of the application
 applicationName: kafka-cluster
 
 kafka:
-  # kafka.image is the name of kafka container image to use
+  ## kafka.image is the name of kafka container image to use
   image: nbogojevic/kafka
-  # kafka.tag is the tag of kafka container image to use
+  ## kafka.tag is the tag of kafka container image to use
   tag: latest
-  # kafka.serviceName is the service name used by clients to find the cluster
+  ## kafka.serviceName is the service name used by clients to find the cluster
   serviceName: kafka
-  # kafka.dnsName is the name used by StatefulSet to identify instances
+  ## kafka.dnsName is the name used by StatefulSet to identify instances
   dnsName: broker
-  # kafka.nodes is set to number of nodes in kafka cluster
+  ## kafka.nodes is set to number of nodes in kafka cluster
   nodes: 3
-  # kafka.jvmFlags are default java options to use with kafka
+  ## kafka.jvmFlags are default java options to use with kafka
   jvmFlags: -Xmx1G
-  # kafka.storageSize is the default size of storage when using persistent volumes
+  ## kafka.storageSize is the default size of storage when using persistent volumes
   storageSize: 2GiB
-  # kafka.persistent is set to true to use persitent volumes
+  ## kafka.persistent is set to true to use persitent volumes
   persistent: false
-  # kafka.nodeSelector can be set with node labels to use when choosing nodes to deploy
+  ## kafka.nodeSelector can be set with node labels to use when choosing nodes to deploy
   nodeSelector:
 
 zookeeper:
-  # zookeeper.image is the name of zookeeper container image to use
+  ## zookeeper.image is the name of zookeeper container image to use
   image: nbogojevic/zookeeper
-  # zookeeper.tag is the tag of zookeeper container image to use
+  ## zookeeper.tag is the tag of zookeeper container image to use
   tag: latest
-  # zookeeper.serviceName is the service name used by clients to find the cluster
+  ## zookeeper.serviceName is the service name used by clients to find the cluster
   serviceName: zookeeper
-  # zookeeper.dnsName is the name used by StatefulSet to identify instances
+  ## zookeeper.dnsName is the name used by StatefulSet to identify instances
   dnsName: zoo
-  # zookeeper.nodes is set to number of nodes in zookeeper cluster
+  ## zookeeper.nodes is set to number of nodes in zookeeper cluster
   nodes: 3 
-  # zookeeper.jvmFlags are default java options to use with kafka
+  ## zookeeper.jvmFlags are default java options to use with kafka
   jvmFlags: -Xmx512m
-  # zookeeper.nodeSelector can be set with node labels to use when choosing nodes to deploy
+  ## zookeeper.nodeSelector can be set with node labels to use when choosing nodes to deploy
   nodeSelector:     
 
-# hawkular is set to true to enable hawkular metrics
+## hawkular is set to true to enable hawkular metrics
 hawkular: false   
 
-# prometheus is set to true to enable prometheus metrics
+## prometheus is set to true to enable prometheus metrics
 prometheus: true
 
-# jolokia is set to true if jolokia JMX endpoint should be exposed
+## jolokia is set to true if jolokia JMX endpoint should be exposed
 jolokia: true
 
-# jolokiaUsername is set to the name of jolokia user for basic authentication
-#jolokiaUsername: jolokia
+## jolokiaUsername is set to the name of jolokia user for basic authentication
+# jolokiaUsername: jolokia
 
-# jolokiaPassword can be set to the password to use. If not specified, a random password is generated
-#jolokiaPassword: jolokia
+## jolokiaPassword can be set to the password to use. If not specified, a random password is generated
+# jolokiaPassword: jolokia
 ```
 
 ## Kafka
 
 ### Kafka as Kubernetes StatefulSet
 
-Kafka runs as a Kubernetes StatefulSet (or PetSet in older versions - helm chart auotmatically chooses supported resource type). 
+Kafka runs as a Kubernetes StatefulSet (or PetSet in older versions - helm chart automatically chooses the supported resource type). 
 
 #### Storage
 
 Kafka can be run with or without persitent volumes.
 
-When running with persitent volumes, the data is saved on instance or node crash. When running without persitent volumes, the data is stored locally on the node a kubernetes node loss may result in data loss, so high-availability and resiliency should be supported by kafka mechanisms, e.g. setting replication factor sufficiently high.
+When running with persitent volumes, the data is saved on the instance or the node crash. When running without persitent volumes, the data is stored locally on the node a kubernetes node loss may result in data loss, so high-availability and resiliency should be supported by kafka mechanisms, e.g. setting replication factor sufficiently high.
 
 As for best performances, one might perfer specific local storage characteristics (SSD), helm chart allows usage of node selector to select instances where kafka would be deployed.  
 
@@ -93,19 +95,13 @@ As for best performances, one might perfer specific local storage characteristic
 
 Default kafka container image is based on [fabric8/s2i-java](https://hub.docker.com/r/fabric8/s2i-java/) image. The docker build is located in [docker-kafka/](./docker-kafka/).
 
-#### Customizing Kafka
-
-It is possible to customize kafka container to advertise different host and port. This is done by specifying following
-two environmnet variables: `KAFKA_ADVERTISED_HOST` and `KAFKA_ADVERTISED_PORT`. When they are specified, the kafka
-containers will use those values to advertise their address instead of default ones. 
-
-
 ## Zookeeper
 
 Zookeeper also runs as a Stateful Set.
 
 Zookeeper uses local storage, so if you lose your zookeeper cluster, kafka will be unaware that persisted topics exist.
-The data is still there, but you will need to re-create topics. This can be done using [kafka-operator](https://github.com/nbogojevic/kafka-operator).
+The topic data is still present on kafka brokers, but you will need to re-create topics. 
+This can be done using [kafka-operator](https://github.com/nbogojevic/kafka-operator).
 
 ### Zookeeper container image
 

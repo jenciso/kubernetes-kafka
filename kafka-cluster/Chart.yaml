@@ -1,6 +1,6 @@
 name: kafka-cluster
 version: 0.1.0
-description: Kafka deplyoment as stateful set
+description: Kafka cluster
 keywords:
   - kafka
   - zookeeper

@@ -85,7 +85,7 @@ spec:
       - name: datadir
         emptyDir: {}
       {{- if .Values.hawkular }}
-W      - name: hawkular-openshift-agent
+      - name: hawkular-openshift-agent
         configMap:
           name: zookeeper-{{ .Values.global.applicationName }}-metrics-config
       {{- end }}

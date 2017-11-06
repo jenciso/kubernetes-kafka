@@ -10,6 +10,6 @@ spec:
   - port: 9092
   clusterIP: None
   selector:
-    app: {{ .Values.applicationName }}
+    app: {{ .Values.global.applicationName }}
     component: kafka-broker
     release: {{ .Release.Name | quote }}
