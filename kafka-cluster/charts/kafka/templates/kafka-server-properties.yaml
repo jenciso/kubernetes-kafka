@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kafka-{{ .Values.global.applicationName }}-server-properties
+  name: {{ .Values.global.applicationName }}-kafka-server-properties
   labels:
     component: kafka-broker
     role: server.properties

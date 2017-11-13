@@ -22,7 +22,7 @@ kafka:
   ## kafka.persistent is set to true to use persitent volumes
   persistent: false
   ## set to true if clients must authenticate. Only supports plaintext SASL mechanism.
-  secured: true
+  secured: false
   ## set to true if communication with kafka should be encrypted. TODO certificate management
   # tls: false
   # Set to true if topics can be deleted.

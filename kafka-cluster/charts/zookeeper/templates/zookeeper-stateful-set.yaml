@@ -14,6 +14,10 @@ metadata:
     component: zookeeper
     {{- include "standardLabels" . | indent 4 }}
 spec:
+  selector:
+    matchLabels:
+      component: zookeeper
+      {{ include "standardLabels" . | indent 6 }}
   serviceName: {{ .Values.dnsName | quote }}
   replicas: {{ .Values.nodes }}
   template:
@@ -23,9 +27,9 @@ spec:
     {{- include "standardLabels" . | indent 8 }}
       annotations:
       {{- if .Values.global.prometheus }}
-        prometheus.io/scrape: true
-        prometheus.io/path: /metrics
-        prometheus.io/port: 5555
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "5555"
       {{- end }}
     spec:
       {{- if .Values.nodeSelector }}
@@ -87,5 +91,5 @@ spec:
       {{- if .Values.global.hawkular }}
       - name: hawkular-openshift-agent
         configMap:
-          name: zookeeper-{{ .Values.global.applicationName }}-metrics-config
+          name: {{ .Values.global.applicationName }}-zookeeper-hawkular-config
       {{- end }}
