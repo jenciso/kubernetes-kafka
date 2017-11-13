@@ -17,15 +17,13 @@ Installation in OpenShift can be done using provided openshift templates. For de
 ### Helm Chart Parameters
 
 ```yaml
-## imageRegistry is the address of the container image registry to use
-# imageRegistry: index.docker.io
 
-## pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
-pullPolicy: IfNotPresent
-## applicationName is the default name of the application
-applicationName: kafka-cluster
 
 kafka:
+  ## kafka.imageRegistry is the address of the container image registry to use
+  # imageRegistry: docker.io
+  ## kafka.pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
+  pullPolicy: IfNotPresent
   ## kafka.image is the name of kafka container image to use
   image: nbogojevic/kafka
   ## kafka.tag is the tag of kafka container image to use
@@ -42,10 +40,31 @@ kafka:
   storageSize: 2GiB
   ## kafka.persistent is set to true to use persitent volumes
   persistent: false
+  ## set to true if clients must authenticate. Only supports plaintext SASL mechanism.
+  secured: true
+  ## set to true if communication with kafka should be encrypted. TODO certificate management
+  # tls: false
+  # Set to true if topics can be deleted.
+  deleteTopicEnable: false
+  # Then name of the admin user. If not specified a random name is generated.
+  #adminUser: admin
+  # Then name of the admin password. If not specified a random password is generated.
+  #adminPassword: secret-password
+  # Then name of the client user. If not specified a random name is generated.
+  #clientUser: client
+  # Then name of the client password. If not specified a random password is generated.
+  #clientPassword: secret-password
+  zookeeperService: zookeeper
+  # Default timeout in ms when connecting to zookeeper
+  zookeperTimeout: 6000
   ## kafka.nodeSelector can be set with node labels to use when choosing nodes to deploy
   nodeSelector:
 
 zookeeper:
+  ## zookeeper.imageRegistry is the address of the container image registry to use
+  # imageRegistry: docker.io
+  ## kafka.pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
+  pullPolicy: IfNotPresent
   ## zookeeper.image is the name of zookeeper container image to use
   image: nbogojevic/zookeeper
   ## zookeeper.tag is the tag of zookeeper container image to use
@@ -61,21 +80,25 @@ zookeeper:
   ## zookeeper.nodeSelector can be set with node labels to use when choosing nodes to deploy
   nodeSelector:     
 
-## hawkular is set to true to enable hawkular metrics
-hawkular: false   
+global:
+  ## applicationName is the default name of the application
+  applicationName: kafka-cluster
 
-## prometheus is set to true to enable prometheus metrics
-prometheus: true
+  ## hawkular is set to true to enable hawkular metrics
+  hawkular: false   
 
-## jolokia is set to true if jolokia JMX endpoint should be exposed
-jolokia: true
+  ## prometheus is set to true to enable prometheus metrics
+  prometheus: true
 
-## jolokiaUsername is set to the name of jolokia user for basic authentication
-# jolokiaUsername: jolokia
+  ## jolokia is set to true if jolokia JMX endpoint should be exposed
+  jolokia: true
 
-## jolokiaPassword can be set to the password to use. If not specified, a random password is generated
-# jolokiaPassword: jolokia
-```
+  ## jolokiaUsername is set to the name of jolokia user for basic authentication
+  # jolokiaUsername: jolokia
+
+  ## jolokiaPassword can be set to the password to use. If not specified, a random password is generated
+  # jolokiaPassword: jolokia
+  ```
 
 ## Kafka
 
@@ -114,3 +137,19 @@ via prometheus jmx_exporter.
 
 If prometheus is enabled via helm variables, StatefulSet pods will be annotated with standard prometheus scraping annotations.
 
+## Building
+
+Building docker images:
+
+```bash
+docker build docker-kafka -t nbogojevic/kafka -f docker-kafka/Dockerfile
+docker build docker-zookeeper -t nbogojevic/zookeeper -f docker-zookeeper/Dockerfile 
+```
+
+Checking helm chart:
+
+```bash
+helm init
+helm lint kafka-cluster
+helm install kafka-cluster
+```

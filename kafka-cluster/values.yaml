@@ -1,10 +1,10 @@
-## imageRegistry is the address of the container image registry to use
-# imageRegistry: docker.io
 
-## pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
-pullPolicy: IfNotPresent
 
 kafka:
+  ## kafka.imageRegistry is the address of the container image registry to use
+  # imageRegistry: docker.io
+  ## kafka.pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
+  pullPolicy: IfNotPresent
   ## kafka.image is the name of kafka container image to use
   image: nbogojevic/kafka
   ## kafka.tag is the tag of kafka container image to use
@@ -42,6 +42,10 @@ kafka:
   nodeSelector:
 
 zookeeper:
+  ## zookeeper.imageRegistry is the address of the container image registry to use
+  # imageRegistry: docker.io
+  ## kafka.pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
+  pullPolicy: IfNotPresent
   ## zookeeper.image is the name of zookeeper container image to use
   image: nbogojevic/zookeeper
   ## zookeeper.tag is the tag of zookeeper container image to use
