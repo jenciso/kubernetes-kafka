@@ -9,35 +9,35 @@ apiVersion: "apps/v1alpha1"
 kind: PetSet
 {{- end }}
 metadata:
-  name: {{ .Values.kafka.dnsName | quote }}
+  name: {{ .Values.dnsName | quote }}
   labels:
     component: kafka-broker
     {{ include "standardLabels" . | indent 4}}
 spec:
-  serviceName: {{ .Values.kafka.dnsName | quote }}
-  replicas: {{ .Values.kafka.nodes }}
+  serviceName: {{ .Values.dnsName | quote }}
+  replicas: {{ .Values.nodes }}
   template:
     metadata:
       labels:
         component: kafka-broker
         {{ include "standardLabels" . | indent 8}}
       annotations:
-      {{- if .Values.kafka.prometheus }}
+      {{- if .Values.global.prometheus }}
         prometheus.io/scrape: true
         prometheus.io/path: /metrics
         prometheus.io/port: 5555
       {{- end }}
     spec:
-      {{- if .Values.zookeeper.nodeSelector }}
+      {{- if .Values.nodeSelector }}
       nodeSelector: 
-        {{- range $key, $val := .Values.zookeeper.nodeSelector }}
+        {{- range $key, $val := .Values.nodeSelector }}
         {{ $key }}: {{ $val | quote }}
         {{- end}}
       {{- end }}
       terminationGracePeriodSeconds: 10
       containers:
       - name: broker
-        image: {{ if .Values.imageRegistry }}{{ .Values.imageRegistry }}/{{ end }}{{ .Values.kafka.image }}:{{ .Values.kafka.tag }}
+        image: {{ if .Values.imageRegistry }}{{ .Values.imageRegistry }}/{{ end }}{{ .Values.image }}:{{ .Values.tag }}
         imagePullPolicy: {{ .Values.pullPolicy }}
         env:
         {{- if .Values.global.jolokia }}
@@ -55,7 +55,7 @@ spec:
               key: password
         {{- end }}
         - name: KAFKA_HEAP_OPTS 
-          value: "{{ .Values.kafka.jvmFlags }}"
+          value: "{{ .Values.jvmFlags }}"
         ports:
         - containerPort: 9092
           name: kafka
@@ -78,12 +78,12 @@ spec:
       - name: kafka-service-properties
         configMap:
           name: kafka-{{ .Values.global.applicationName }}-service-properties
-      {{- if .Values.hawkular }}
+      {{- if .Values.global.hawkular }}
       - name: hawkular-openshift-agent
         configMap:
           name: kafka-{{ .Values.global.applicationName }}-metrics-config
       {{- end }}
-  {{- if .Values.kafka.persistent }}
+  {{- if .Values.persistent }}
   volumeClaimTemplates:
   - metadata:
       name: kafka-{{ .Values.global.applicationName }}-datadir
@@ -97,5 +97,5 @@ spec:
       - ReadWriteOnce
       resources:
         requests:
-          storage: {{ .Values.kafka.storageSize | quote }}
+          storage: {{ .Values.storageSize | quote }}
   {{- end }}

@@ -35,6 +35,7 @@ kafka:
   #clientUser: client
   # Then name of the client password. If not specified a random password is generated.
   #clientPassword: secret-password
+  zookeeperService: zookeeper
   # Default timeout in ms when connecting to zookeeper
   zookeperTimeout: 6000
   ## kafka.nodeSelector can be set with node labels to use when choosing nodes to deploy

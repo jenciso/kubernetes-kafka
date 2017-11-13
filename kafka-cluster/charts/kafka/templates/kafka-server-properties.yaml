@@ -31,16 +31,16 @@ data:
     # server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
     # You can also append an optional chroot string to the urls to specify the
     # root directory for all kafka znodes.
-    zookeeper.connect={{ .Values.zookeeper.serviceName }}:2181
+    zookeeper.connect={{ .Values.zookeeperService }}:2181
 
     # Timeout in ms for connecting to zookeeper
-    zookeeper.connection.timeout.ms={{ default 6000 .Values.kafkaZookeperTimeout}}
+    zookeeper.connection.timeout.ms={{ default 6000 .Values.zookeperTimeout}}
 
-    {{ if .Values.kafka.secured }}
+    {{ if .Values.secured }}
     ############################# Security #############################
-    listeners=SASL_{{ if .Values.kafka.secured }}SSL{{ else }}PLAINTEXT{{ end }}://:9092
+    listeners=SASL_{{ if .Values.secured }}SSL{{ else }}PLAINTEXT{{ end }}://:9092
     # Security protocol to use between brokers
-    security.inter.broker.protocol=SASL_{{ if .Values.kafka.secured }}SSL{{ else }}PLAINTEXT{{ end }}
+    security.inter.broker.protocol=SASL_{{ if .Values.secured }}SSL{{ else }}PLAINTEXT{{ end }}
     # SASL mechanisms to use between brokers (PLAIN)
     sasl.mechanism.inter.broker.protocol=PLAIN
     # What SASL mechanisms are enabled (only PLAIN)
