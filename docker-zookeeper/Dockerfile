@@ -16,7 +16,7 @@ RUN mkdir -p "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR" \
     && chown "$ZOO_USER:root" "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR" \
     && chmod -R "g+rwX" "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR"
 
-ARG DISTRO_NAME=zookeeper-3.4.9
+ARG DISTRO_NAME=zookeeper-3.4.11
 
 # Download Apache Zookeeper, untar and clean up
 RUN set -x \
