@@ -29,7 +29,7 @@ spec:
       {{- if .Values.global.prometheus }}
         prometheus.io/scrape: "true"
         prometheus.io/path: "/metrics"
-        prometheus.io/port: "5555"
+        prometheus.io/port: "9779"
       {{- end }}
     spec:
       {{- if .Values.nodeSelector }}
@@ -38,7 +38,7 @@ spec:
         {{ $key }}: {{ $val | quote }}
         {{- end}}
       {{- end }}
-      terminationGracePeriodSeconds: 10
+      terminationGracePeriodSeconds: 1
       containers:
       - name: zookeeper
         image: {{ if .Values.imageRegistry }}{{ .Values.imageRegistry }}/{{ end }}{{ .Values.image }}:{{ .Values.tag }}
@@ -70,7 +70,7 @@ spec:
         - containerPort: 3888
           name: leader-election
         {{- if .Values.global.prometheus }}
-        - containerPort: 5555
+        - containerPort: 9779
           name: prometheus
         {{- end }}
         {{- if .Values.global.jolokia }}

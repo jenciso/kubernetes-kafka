@@ -31,13 +31,12 @@ kafka:
   #adminUser: admin
   # Then name of the admin password. If not specified a random password is generated.
   #adminPassword: secret-password
-  # Then name of the client user. If not specified a random name is generated.
-  #clientUser: client
-  # Then name of the client password. If not specified a random password is generated.
-  #clientPassword: secret-password
+  ## zookeeperServic the name of zookeper service to use
   zookeeperService: zookeeper
-  # Default timeout in ms when connecting to zookeeper
+  ## zookeperTimeout Default timeout in ms when connecting to zookeeper
   zookeperTimeout: 6000
+  ## usernamePoolSize number of predefined users for topic access
+  usernamePoolSize: 50
   ## kafka.nodeSelector can be set with node labels to use when choosing nodes to deploy
   nodeSelector:
 
@@ -60,6 +59,28 @@ zookeeper:
   jvmFlags: -Xmx512m
   ## zookeeper.nodeSelector can be set with node labels to use when choosing nodes to deploy
   nodeSelector:     
+
+kafka-operator:
+  ## enabled is set to true if kafka-operator should be deployed
+  enabled: false
+  ## image is the name of kafka-operator container image to use
+  image: nbogojevic/kafka-operator
+  ## pullPolicy is the kubernetes policy to use for pulling images: Always, IfNotPresent, Never
+  pullPolicy: IfNotPresent
+  ## tag is the tag of kafka container image to use
+  tag: latest
+  ## bootstrap is the service name used by discover kafka cluster
+  bootstrapServer: kafka:9092
+  ## bootstrap is the service name used by discover kafka cluster
+  zookeeperConnect: zookeeper:2181
+  ## logLevel is the log level to set for kafka-operator
+  logLevel: DEBUG
+  ## deleteTopics is set to true if operator can delete kafka topics
+  deleteTopics: true
+  ## importTopics is set to true if operator should take ownership of all existing kafka topics
+  importTopics: true
+  ## jvmFlags are default java options to use with operator
+  jvmFlags: -Xmx128M
 
 global:
   ## applicationName is the default name of the application

@@ -1,7 +1,34 @@
 {{ $adminUser := default (randAlphaNum 16) .Values.adminUser }}
 {{ $adminPassword := default (randAlphaNum 16) .Values.adminPassword }}
-{{ $clientUser := default (randAlphaNum 16) .Values.clientUser }}
-{{ $clientPassword := default (randAlphaNum 16) .Values.clientPassword }}
+{{- $up := dict }}
+{{- range $i, $e := until (default 50 .Values.usernamePoolSize) }}
+{{- $_ := set $up (randAlphaNum 16) (randAlphaNum 16) }}
+{{- end }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.global.applicationName }}-kafka-auth-pool
+  labels:
+    component: kafka-operator
+    role: auth
+    {{- include "standardLabels" . | indent 4 }}
+stringData:
+  username-pool: |
+    {{- range $k, $v := $up }}
+    {{ $k }}={{ $v }}
+    {{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.global.applicationName }}-kafka-consumed-auth-pool
+  labels:
+    component: kafka-operator
+    role: auth
+    {{- include "standardLabels" . | indent 4 }}
+stringData:
+  consumed-usernames: ""
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -17,21 +44,7 @@ stringData:
       username="{{ $adminUser }}"
       password="{{ $adminPassword }}"
       user_{{ $adminUser }}="{{ $adminPassword }}"
-      user_{{ $clientUser }}="{{ $clientPassword }}";
-    };
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ .Values.global.applicationName }}-kafka-client-auth
-  labels:
-    component: kafka-broker
-    role: auth
-    {{- include "standardLabels" . | indent 4 }}
-stringData:
-  kafka-client-jaas.conf: |
-    KafkaServer {
-      org.apache.kafka.common.security.plain.PlainLoginModule required
-      username="{{ $clientUser }}"
-      password="{{ $clientPassword }}"
+      {{- range $k, $v := $up }}
+      user_{{ $k }}="{{ $v }}"
+      {{- end }}
     };

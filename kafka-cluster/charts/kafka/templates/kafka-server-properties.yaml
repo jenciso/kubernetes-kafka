@@ -19,6 +19,9 @@ data:
     # Switch to enable topic deletion or not, default value is false
     delete.topic.enable={{ default "false" .Values.kafkaDeleteTopicEnable}}
 
+    # Rebalance leaders if needed 
+    auto.leader.rebalance.enable=true
+
     ############################# Log Basics #############################
 
     # A comma seperated list of directories under which to store log files

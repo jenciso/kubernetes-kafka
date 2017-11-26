@@ -2,18 +2,13 @@
 
 # Command line arguments given to this script
 export KAFKA_OPTS="${KAFKA_OPTS:+${KAFKA_OPTS} }"
-# Use Prometheus exporter if defined
-if [ ! -z "$PROMETHEUS_EXPORTER_CONF" ]; then
-    if [ -f /opt/jmx_exporter/conf/jmx_exporter.yaml ]; then
-        export KAFKA_OPTS="${KAFKA_OPTS:+${KAFKA_OPTS} }${PROMETHEUS_EXPORTER_CONF}"
-    fi
-fi
+
 # Add jolokia or agent bond
-if [ -f /opt/agent-bond-opts ]; then
-    export KAFKA_OPTS="${KAFKA_OPTS:+${KAFKA_OPTS} }$(agent-bond-opts)"
-elif [ -f /opt/agentbond/agent-bond-opts ]; then
-    export KAFKA_OPTS="${KAFKA_OPTS:+${KAFKA_OPTS} }$(/opt/agentbond/agent-bond-opts)"
-elif [ -f /opt/jolokia/jolokia-opts ]; then
+if [ -f /opt/prometheus/prometheus-opts ]; then
+    export KAFKA_OPTS="${KAFKA_OPTS:+${KAFKA_OPTS} }$(/opt/prometheus/prometheus-opts)"
+fi
+
+if [ -f /opt/jolokia/jolokia-opts ]; then
     export KAFKA_OPTS="${KAFKA_OPTS:+${KAFKA_OPTS} }$(/opt/jolokia/jolokia-opts)"
 fi
 

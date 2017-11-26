@@ -1,5 +1,5 @@
 name: kafka-cluster
-version: 0.1.0
+version: 0.2.0
 description: Kafka cluster
 keywords:
   - kafka
@@ -10,4 +10,4 @@ sources:
 maintainers: 
   - name: Nenad Bogojević
 engine: gotpl # The name of the template engine (optional, defaults to gotpl)
-appVersion: 0.11.0-1
+appVersion: 1.0.0-1
