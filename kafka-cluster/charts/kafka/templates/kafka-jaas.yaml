@@ -1,8 +1,8 @@
 {{ $adminUser := default (randAlphaNum 16) .Values.adminUser }}
 {{ $adminPassword := default (randAlphaNum 16) .Values.adminPassword }}
-{{- $up := dict }}
-{{- range $i, $e := until (default 50 .Values.usernamePoolSize) }}
-{{- $_ := set $up (randAlphaNum 16) (randAlphaNum 16) }}
+{{- $usernamePool := dict }}
+{{- range $i, $e := until (default 50 (int .Values.usernamePoolSize)) }}
+{{- $_ := set $usernamePool (randAlphaNum 16) (randAlphaNum 16) }}
 {{- end }}
 apiVersion: v1
 kind: Secret
@@ -14,8 +14,8 @@ metadata:
     {{- include "standardLabels" . | indent 4 }}
 stringData:
   username-pool: |
-    {{- range $k, $v := $up }}
-    {{ $k }}={{ $v }}
+    {{- range $user, $pass := $usernamePool }}
+    {{ $user }}={{ $pass }}
     {{- end }}
 ---
 apiVersion: v1
@@ -44,7 +44,7 @@ stringData:
       username="{{ $adminUser }}"
       password="{{ $adminPassword }}"
       user_{{ $adminUser }}="{{ $adminPassword }}"
-      {{- range $k, $v := $up }}
+      {{- range $k, $v := $usernamePool }}
       user_{{ $k }}="{{ $v }}"
       {{- end }}
     };
